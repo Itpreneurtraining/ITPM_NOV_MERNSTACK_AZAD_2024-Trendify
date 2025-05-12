@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import axios from "axios";
@@ -11,10 +12,13 @@ const Login = ({ setToken }) => {
   const onSubmitHandler = async (e) => {
     try {
       e.preventDefault();
+      console.log(backendUrl);
+      
       const response = await axios.post(backendUrl + "/api/user/admin", {
         email,
         password,
       });
+console.log(response);
 
       if (response.data.success) {
         setToken(response.data.token);

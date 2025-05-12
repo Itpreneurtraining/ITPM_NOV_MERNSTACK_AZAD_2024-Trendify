@@ -1,8 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
 
-// INFO: Route for adding a product
-const addProduct = async (req, res) => {
+
+
+
+ const addProduct = async (req, res) => {
   try {
     const {
       name,
@@ -14,18 +16,21 @@ const addProduct = async (req, res) => {
       bestSeller,
     } = req.body;
 
-    const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image2[0];
-    const image3 = req.files.image3 && req.files.image3[0];
-    const image4 = req.files.image4 && req.files.image4[0];
+    // console.log("Request Body: ", req.body);
+    // console.log("Request Files: ", req.files);
 
-    const productImages = [image1, image2, image3, image4].filter(
-      (image) => image !== undefined
-    );
+    // Fetch images from req.files safely
+    const productImages = [
+      req.files.image1 && req.files.image1?.[0],
+      req.files.image2 && req.files.image2?.[0],
+      req.files.image3 && req.files.image3?.[0],
+      req.files.image4 && req.files.image4?.[0],
+    ].filter(Boolean);
 
+    // Upload images to Cloudinary
     let imageUrls = await Promise.all(
       productImages.map(async (image) => {
-        let result = await cloudinary.uploader.upload(image.path, {
+        const result = await cloudinary.uploader.upload(image.path, {
           resource_type: "image",
         });
         return result.secure_url;
@@ -39,7 +44,7 @@ const addProduct = async (req, res) => {
       category,
       subCategory,
       sizes: JSON.parse(sizes),
-      bestSeller: bestSeller === "true" ? true : false,
+      bestSeller: bestSeller === "true",
       image: imageUrls,
       date: Date.now(),
     };
@@ -47,14 +52,15 @@ const addProduct = async (req, res) => {
     const product = new productModel(productData);
     await product.save();
 
-    res.status(201).json({ success: true, message: "Product added" });
+    res.status(201).json({ success: true, message: "Product added successfully" });
   } catch (error) {
-    console.log("Error while adding product: ", error);
+    console.log("Error while adding product: ", error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// INFO: Route for fetching all products
+
+// // INFO: Route for fetching all products
 const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({});
@@ -89,4 +95,4 @@ const getSingleProduct = async (req, res) => {
   }
 };
 
-export { addProduct, listProducts, removeProduct, getSingleProduct };
+export {  addProduct,listProducts, removeProduct, getSingleProduct };

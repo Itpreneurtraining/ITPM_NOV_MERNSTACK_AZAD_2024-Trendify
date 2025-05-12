@@ -8,7 +8,7 @@ import productRouter from "./routes/productRoute.js";
 
 // INFO: Create express app
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT
 connectDB();
 connectCloudinary();
 
@@ -27,5 +27,5 @@ app.get("/", (req, res) => {
 
 // INFO: Start server
 app.listen(port, () =>
-  console.log(`Server is running on at http://localhost:${port}`)
+  console.log(`Server is running on at ${port}`)
 );

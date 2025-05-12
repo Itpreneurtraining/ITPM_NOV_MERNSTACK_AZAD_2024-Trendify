@@ -4,30 +4,36 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 
-const Add = ({ token }) => {
-  const [image1, setImage1] = useState(null);
-  const [image2, setImage2] = useState(null);
-  const [image3, setImage3] = useState(null);
-  const [image4, setImage4] = useState(null);
 
+const Add = ({ token }) => {
+  // Image states
+  const [image1, setImage1] = useState(false);
+  const [image2, setImage2] = useState(false);
+  const [image3, setImage3] = useState(false);
+  const [image4, setImage4] = useState(false);
+
+  // Product info states
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
+  const [category, setCategory] = useState("Men");
+  const [subCategory, setSubCategory] = useState("Topwear");
   const [price, setPrice] = useState("");
   const [sizes, setSizes] = useState([]);
   const [bestSeller, setBestSeller] = useState(false);
 
+  // Submit Handler
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
       const formData = new FormData();
 
+      // Append images if they exist
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
       image3 && formData.append("image3", image3);
       image4 && formData.append("image4", image4);
 
+      // Append form data
       formData.append("name", name);
       formData.append("description", description);
       formData.append("category", category);
@@ -36,12 +42,18 @@ const Add = ({ token }) => {
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("bestSeller", bestSeller);
 
-      const response = await axios.post(
-        backendUrl + "/api/product/add",
-        formData,
-        { headers: { token } }
-      );
 
+      
+    //  const  backendUrl = process.env.VITE_BACKEND_URL;
+      // Send the request
+      const response = await axios.post(
+        `${backendUrl}/api/product/add`,
+        formData,
+        { headers: { Authorization: token } }
+      );
+      
+
+      // Handle response
       if (response.data.success) {
         toast.success(response.data.message);
         resetForm();
@@ -49,20 +61,21 @@ const Add = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error adding product:", error.message);
       toast.error("Something went wrong");
     }
   };
 
+  // Form Reset
   const resetForm = () => {
-    setImage1(null);
-    setImage2(null);
-    setImage3(null);
-    setImage4(null);
+    setImage1(false);
+    setImage2(false);
+    setImage3(false);
+    setImage4(false);
     setName("");
     setDescription("");
-    setCategory("");
-    setSubCategory("");
+    setCategory("Men");
+    setSubCategory("Topwear");
     setPrice("");
     setSizes([]);
     setBestSeller(false);
